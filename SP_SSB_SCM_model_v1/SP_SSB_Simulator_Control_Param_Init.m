@@ -32,7 +32,7 @@ ParamControl.Preemphasis_or_Not = 1;
 ParamControl.Clipping_or_Not = 1;
 
 %% Physical layer
-ParamControl.VSB_or_Not = 0; % related to how many dac channels to use
+ParamControl.VSB_or_Not = 1; % related to how many dac channels to use
 
     
 % DAC

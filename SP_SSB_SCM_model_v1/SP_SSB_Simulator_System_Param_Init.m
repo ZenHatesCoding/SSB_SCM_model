@@ -150,9 +150,9 @@ if ParamControl.Curve_Fitting_or_Not
     ParamLas.Laser_Linewidth = 200e3;
 end
 
-ParamLas.slope = 10^(1.6)/(300-15);
-ParamLas.current = 10^(ParamLas.laser_power_dBm/10)/ParamLas.slope+15;
-ParamLas.Voltage = 2.5;
+ParamLas.slope = 0.137; %10^(1.6)/(300-15);
+ParamLas.current = 10^(ParamLas.laser_power_dBm/10)/ParamLas.slope+40;
+ParamLas.Voltage = 2.7;
 ParamLas.Laser_OSNR = 39; % laser OSNR 10*log10(10^(0.1*(-140))*50e9/4)= -39
 if ParamControl.RxPreAmp_or_Not == 1
     ParamLas.Laser_OSNR =  ParamLas.Laser_OSNR - 5;
@@ -258,6 +258,7 @@ end
 
 ParamADC.qnbit_ADC = 8;
 
+
 ParamADC.ADC_BW = ParamADC.ADC_Rate/2;
 
 
@@ -338,6 +339,8 @@ if ParamControl.Digital_Resample_Before_KK_or_Not
 else
     ParamRxDSP.KKoverSamp = (ParamADC.ADC_Rate/1e9)/(ParamSig.Baud_Rate/1e9);
 end
+ParamRxDSP.nb = 8;
+ParamRxDSP.f_clk = 500e6; % 500 MHz
 ParamRxDSP.hilbert_tap = 0; % =0 no overlap at all
 ParamRxDSP.numKKiter = 1; % for KK option 2,3 and 4 
 ParamRxDSP.FAiterKK_tap = 0;
