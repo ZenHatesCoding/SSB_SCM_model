@@ -140,7 +140,7 @@ switch ParamControl.Laser_case
         ParamLas.Laser_Linewidth = 2e6;
     case 3
         if ParamControl.VSB_or_Not
-            ParamLas.laser_power_dBm = 16;
+            ParamLas.laser_power_dBm = 17.5;
         else
             ParamLas.laser_power_dBm = 14.5;
         end
@@ -208,7 +208,7 @@ if ParamControl.VSB_or_Not
         case 5
             ParamVSB.Opt_Flt_offset = 3e9; 
             % ParamVSB.Opt_Flt_offset =ParamSig.GuardBand;
-            ParamVSB.Opt_Flt_drift = -1.8e9; 
+            ParamVSB.Opt_Flt_drift = 0e9; 
             ParamVSB.Opt_Flt_ILoss_dB = 0.5 + ParamChan.coupler_loss_dB*2;
     end
 else

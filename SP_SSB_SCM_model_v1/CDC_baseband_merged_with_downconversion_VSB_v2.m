@@ -125,8 +125,7 @@ function Output_Samples = CDC_baseband_merged_with_downconversion_VSB_v2(Input_S
 
 %     % trick - only for Lumentum filter with fixed filtering response
     if ParamControl.LSB_or_RSB
-        load('LSB_h.mat'); 
-%         load('LSB_h_2.mat'); 
+        load('LSB_h.mat');  
     else
         load('RSB_h.mat');
     end

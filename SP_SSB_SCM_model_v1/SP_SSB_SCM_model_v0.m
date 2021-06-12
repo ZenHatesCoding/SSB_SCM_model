@@ -1,8 +1,6 @@
 
-%% ZP 01/04/2020
-% currently only works for single carrier 16 QAM 
 clc; 
-% clear;
+clear;
 close all;
 
 %% Initialization
