@@ -1,3 +1,4 @@
+
 % Prepare general parameters
 switch ParamControl.FEC_option
     case 1
@@ -9,11 +10,11 @@ B = ParamSig.Baud_Rate/1e9; %[Gbaud]
 MM = 2^ParamSig.SC(1); % 16-QAM
 D = ParamFib.D; %[ps/nm-km]
 Lkm = ParamFib.FiberLength/1e3; %[km]
-n_DAC = ParamDAC.qnbit_DAC;
-n_ADC = ParamADC.qnbit_ADC;
+n_DAC = ParamRxDSP.nb; % bit resolution of Tx DSP
+n_ADC = ParamRxDSP.nb; % bit resolution of Rx DSP
 
-f_clk  = 2e9;
-
+% f_clk  = 500e6; % 2e9 in the previous version
+f_clk  = ParamRxDSP.f_clk;
 %% TxDSP - Modulation 
 n_samp = 2;
 n_tap = 1;
