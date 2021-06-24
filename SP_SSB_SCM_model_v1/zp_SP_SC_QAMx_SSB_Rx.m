@@ -84,13 +84,32 @@ function [BER_X,SNR_X] = zp_SP_SC_QAMx_SSB_Rx(ParamControl,ParamRxDSP,ParamSig,P
                         num_zero_insertion = 768*alpha; 
                     end
                 else
-                    if ParamRxDSP.KKoverSamp == 90/30
-                        Nfft = 1280*alpha;
-                        num_zero_insertion = 256*alpha;  
+                    % from R_ADC -> Baud*KKoverSamp
+                    if ParamRxDSP.KKoverSamp == 72/30
+                        Nfft = 1024*alpha;
+                        num_zero_insertion = 128*alpha;  
+                    elseif ParamRxDSP.KKoverSamp == 80/30
+                        Nfft = 1024*alpha;
+                        num_zero_insertion = 256*alpha;
+                    elseif ParamRxDSP.KKoverSamp == 84/30
+                        Nfft = 1024*alpha;
+                        num_zero_insertion = 320*alpha; 
+                    elseif ParamRxDSP.KKoverSamp == 88/30
+                        Nfft = 1024*alpha;
+                        num_zero_insertion = 384*alpha;
+                    elseif ParamRxDSP.KKoverSamp == 96/30
+                        Nfft = 1024*alpha;
+                        num_zero_insertion = 512*alpha;
+                    elseif ParamRxDSP.KKoverSamp == 104/30
+                        Nfft = 1024*alpha;
+                        num_zero_insertion = 640*alpha; 
+                    elseif ParamRxDSP.KKoverSamp == 112/30
+                        Nfft = 1024*alpha;
+                        num_zero_insertion = 768*alpha; 
                     end
                 end
                 if (ParamControl.FEC_option == 1 && ParamRxDSP.KKoverSamp ~= 64/28) ||...
-                        (ParamControl.FEC_option == 2 && ParamRxDSP.KKoverSamp ~= 75/30)
+                        (ParamControl.FEC_option == 2 && ParamRxDSP.KKoverSamp ~= 64/30)
                     num_fft_block = ceil(length(Rx_I_X)/Nfft);
 
                     Rx_I_X_len = length(Rx_I_X);
@@ -472,7 +491,7 @@ function [BER_X,SNR_X] = zp_SP_SC_QAMx_SSB_Rx(ParamControl,ParamRxDSP,ParamSig,P
                 figure;plot(abs(fftshift(fft(bn))));title('bn Freq domain');
                 figure;plot(10*log10(abs(fftshift(fft(bn)))));title('bn Freq domain in dB');
             end
-%             save('SSB_h.mat','bn');
+%             save('RSB_h_SD.mat','bn');
             [Rx_Symbols_X] = QAMx_LMS_DD(Rx_Time_Data_X((ParamRxDSP.Train_Sequence_Length*Samples_Per_Symbol+1-M):end),...
                                           bn,SE,... 
                                           ParamRxDSP.LMS_DD_step,ParamControl.Update_Eqtap_or_Not,Samples_Per_Symbol,...

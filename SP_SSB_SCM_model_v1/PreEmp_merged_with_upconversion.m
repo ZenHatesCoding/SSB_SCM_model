@@ -6,6 +6,10 @@ function Output_Samples = PreEmp_merged_with_upconversion(Input_Samples,...
             Nfft = 896; 
             num_zero_insertion = 128;
             num_circshift = ParamSig.Ncircshift;
+        case 2
+            Nfft = 960;
+            num_zero_insertion = 64;
+            num_circshift = ParamSig.Ncircshift;
     end
     
     
@@ -38,8 +42,11 @@ function Output_Samples = PreEmp_merged_with_upconversion(Input_Samples,...
     end
     HLP = HLP.'; % row vector
     HLP = fftshift(HLP);
-    
-    M = 14;
+    if ParamControl.FEC_option == 1
+        M = 14;
+    else
+        M = 15;
+    end
     M1 = M*(Nfft+num_zero_insertion)/Nfft;
     L = Nfft-M;
     

@@ -24,7 +24,7 @@ switch ParamControl.FEC_option
     case 1
         ParamDAC.DAC_Rate = 64e9;
     case 2
-        ParamDAC.DAC_Rate = 75e9;
+        ParamDAC.DAC_Rate = 64e9;
 end
 %% Signal
 switch ParamControl.PAM_or_QAM
@@ -51,8 +51,10 @@ switch ParamControl.PAM_or_QAM
             switch ParamControl.FEC_option
                 case 1
                     ParamSig.SC_Baud_Rate = 28e9;
+                    ParamSig.roll_off = 0.1;
                 case 2
                     ParamSig.SC_Baud_Rate = 30e9;
+                    ParamSig.roll_off = 0.05;
             end
             ParamSig.SC = 4;
             ParamSig.SC_power = 1;
@@ -61,8 +63,9 @@ switch ParamControl.PAM_or_QAM
             ParamSig.SC_Baud_Rate = [8,20]*1e9;
             ParamSig.SC = [3,4];
             ParamSig.SC_power = ([1.2,2.5]);
+            ParamSig.roll_off = 0.1;
         end
-        ParamSig.roll_off = 0.1;
+        
         ParamSig.Baud_Rate = sum(ParamSig.SC_Baud_Rate);
         switch ParamControl.FEC_option
              
@@ -75,7 +78,11 @@ switch ParamControl.PAM_or_QAM
                     ParamSig.Baud_Rate*(1+ParamSig.roll_off)/2;
                 
             case 2
-                ParamSig.GuardBand = 0.140625e9;
+%                 ParamSig.GuardBand = 0.140625e9;
+                ParamSig.Ncircshift = 256; % 256
+                ParamSig.GuardBand = ParamDAC.DAC_Rate/1024*...
+                    ParamSig.Ncircshift-...
+                    ParamSig.Baud_Rate*(1+ParamSig.roll_off)/2;
         end
         if ParamControl.Curve_Fitting_or_Not
             ParamSig.GuardBand = 3e9;
@@ -139,10 +146,19 @@ switch ParamControl.Laser_case
         ParamLas.laser_power_dBm = 13;
         ParamLas.Laser_Linewidth = 2e6;
     case 3
-        if ParamControl.VSB_or_Not
-            ParamLas.laser_power_dBm = 17.5;
-        else
-            ParamLas.laser_power_dBm = 14.5;
+        switch ParamControl.FEC_option
+            case 1
+                if ParamControl.VSB_or_Not
+                    ParamLas.laser_power_dBm = 17.5;
+                else
+                    ParamLas.laser_power_dBm = 14.5;
+                end
+            case 2
+                if ParamControl.VSB_or_Not
+                    ParamLas.laser_power_dBm = 15.5;
+                else
+                    ParamLas.laser_power_dBm = 14;
+                end
         end
         ParamLas.Laser_Linewidth = 1e6;
 end
@@ -208,7 +224,7 @@ if ParamControl.VSB_or_Not
         case 5
             ParamVSB.Opt_Flt_offset = 3e9; 
             % ParamVSB.Opt_Flt_offset =ParamSig.GuardBand;
-            ParamVSB.Opt_Flt_drift = 0e9; 
+            ParamVSB.Opt_Flt_drift = -2.5e9; 
             ParamVSB.Opt_Flt_ILoss_dB = 0.5 + ParamChan.coupler_loss_dB*2;
     end
 else
@@ -249,7 +265,7 @@ switch ParamControl.FEC_option
     case 1
         ParamADC.ADC_Rate = 64e9;
     case 2 
-        ParamADC.ADC_Rate = 75e9;
+        ParamADC.ADC_Rate = 64e9;
 end
 
 if ParamControl.Curve_Fitting_or_Not 
@@ -285,10 +301,21 @@ switch ParamControl.CSPR_tuning_case
     case 1
         ParamSys.CSPR_dB = 12; % for linear model CSPR tuning
     case 2
-        ParamSys.Carrier_path_pwr_ratio = 0.17;
-        if ParamControl.VSB_or_Not
-            ParamSys.Carrier_path_pwr_ratio = 0.34;
+        if ParamControl.FEC_option == 1
+            if ParamControl.VSB_or_Not
+                ParamSys.Carrier_path_pwr_ratio = 0.34;
+            else
+                ParamSys.Carrier_path_pwr_ratio = 0.17;
+            end
+        else
+            if ParamControl.VSB_or_Not
+                ParamSys.Carrier_path_pwr_ratio = 0.3;
+            else
+                ParamSys.Carrier_path_pwr_ratio = 0.18;
+            end
         end
+        
+        
         ParamSys.Vbias_over_Vpi = 0;
     case 3
         if ParamControl.PAM_or_QAM == 1
@@ -331,9 +358,9 @@ if ParamControl.Digital_Resample_Before_KK_or_Not
             end
         case 2
             if ParamControl.KK_option == 0
-                ParamRxDSP.KKoverSamp = 90/30;
+                ParamRxDSP.KKoverSamp = 80/30;
             else
-                ParamRxDSP.KKoverSamp = 75/30;
+                ParamRxDSP.KKoverSamp = 64/30;
             end
     end
 else
@@ -344,10 +371,18 @@ ParamRxDSP.f_clk = 500e6; % 500 MHz
 ParamRxDSP.hilbert_tap = 0; % =0 no overlap at all
 ParamRxDSP.numKKiter = 1; % for KK option 2,3 and 4 
 ParamRxDSP.FAiterKK_tap = 0;
-if ParamControl.VSB_or_Not
-    ParamRxDSP.CD_tap = 35; 
-else
-    ParamRxDSP.CD_tap = 28; 
+if ParamControl.FEC_option == 1
+    if ParamControl.VSB_or_Not
+        ParamRxDSP.CD_tap = 35; 
+    else
+        ParamRxDSP.CD_tap = 28; 
+    end
+elseif ParamControl.FEC_option == 2
+    if ParamControl.VSB_or_Not
+        ParamRxDSP.CD_tap = 45; 
+    else
+        ParamRxDSP.CD_tap = 30; 
+    end
 end
 ParamRxDSP.Nfft = 1024;
 ParamRxDSP.FFT_size_ratio = 1; 

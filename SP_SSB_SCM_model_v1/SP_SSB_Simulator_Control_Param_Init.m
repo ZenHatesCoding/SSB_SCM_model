@@ -6,7 +6,7 @@ ParamControl.Plot_VSB_filter_or_Not = 0;
 ParamControl.Plot_Spectrum_or_Not = 0;
 ParamControl.Plot_CrossCorr_or_Not = 0;
 ParamControl.Equalization_Plot_Conv_or_Not = 0;
-ParamControl.Plot_Constellation_or_Not = 0;
+ParamControl.Plot_Constellation_or_Not = 1;
 ParamControl.Plot_Noise_or_Not = 0;
 ParamControl.Plot_Error_or_Not = 0;
 ParamControl.Plot_Power_Pie_or_Not = 0;
@@ -32,7 +32,7 @@ ParamControl.Preemphasis_or_Not = 1;
 ParamControl.Clipping_or_Not = 1;
 
 %% Physical layer
-ParamControl.VSB_or_Not = 1; % related to how many dac channels to use
+ParamControl.VSB_or_Not = 0; % related to how many dac channels to use
 
     
 % DAC

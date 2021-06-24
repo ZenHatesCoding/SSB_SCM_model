@@ -1,7 +1,7 @@
 %% By ZP 11/02/2019
 % implement freq upconvert and resample in Freq domain
 % only works for DAC_rate = 64 Gs/s
-% Symbol_rate = 28 Gbaud;
+% Symbol_rate = 28 Gbaud,30 Gbaud for SD-FEC;
 %% By ZP 05/30/2018
 % Baseband 16 QAM at DAC rate
 
@@ -105,8 +105,8 @@ function [Tx_Time_Data_X,Tx_Sequence_X,ParamPS] = zp_SP_QAMx_Tx(ParamControl,Par
                     Nfft = 896; 
                     num_zero_insertion = 128;
                 case 2
-                    Nfft = 1024; 
-                    num_zero_insertion = 256;
+                    Nfft = 960;  % 64 Gsa/s 60 Gbaud 0.05
+                    num_zero_insertion = 64;
             end
             num_fft_block = ceil(length(Tx_Time_Data_X)/Nfft);
 

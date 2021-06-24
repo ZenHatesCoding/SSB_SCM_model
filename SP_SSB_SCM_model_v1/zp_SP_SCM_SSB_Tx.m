@@ -55,8 +55,8 @@ function [Tx_Time_Data,Tx_Sequence,ParamPS] = zp_SP_SCM_SSB_Tx(ParamControl,Para
                         Nfft = 1024; 
                         num_circshift = ParamSig.Ncircshift;
                     case 2
-                        Nfft = 1280; 
-                        num_circshift = 284;
+                        Nfft = 1024; 
+                        num_circshift = ParamSig.Ncircshift;
                 end
                 num_fft_block = ceil(length(Tx_Time_Data_SC)/Nfft);
                 Tx_Time_Data_SC = [Tx_Time_Data_SC zeros(1,num_fft_block*Nfft-length(Tx_Time_Data_SC))];
