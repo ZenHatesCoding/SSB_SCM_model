@@ -84,8 +84,12 @@ function Output_Samples = CDC_baseband_merged_with_downconversion(Input_Samples,
     H = [ones(1,Nfft/4),H,ones(1,Nfft/4)];
     H = 1;
     
-    
-    load('SSB_h.mat');
+    switch ParamControl.FEC_option
+        case 1
+            load('SSB_h.mat');
+        case 2
+            load('SSB_h_SD.mat');
+    end
     
     H3 = fftshift(fft(bn.',Nfft-num_zero_discard));
     

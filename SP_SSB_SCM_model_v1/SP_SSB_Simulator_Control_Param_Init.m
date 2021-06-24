@@ -1,5 +1,5 @@
 %% Block Control
-ParamControl.PCA_Enable_or_Not = 1;
+ParamControl.PCA_Enable_or_Not = 0;
 
 %% Plot
 ParamControl.Plot_VSB_filter_or_Not = 0;
@@ -143,5 +143,5 @@ if ParamControl.Curve_Fitting_or_Not == 1
     ParamControl.RxPreAmp_or_Not = 1;
 end
 %% FEC option
-ParamControl.FEC_option = 1;% 1 HD-FEC, 2 SD-FEC
+ParamControl.FEC_option = 2;% 1 HD-FEC, 2 SD-FEC
 
