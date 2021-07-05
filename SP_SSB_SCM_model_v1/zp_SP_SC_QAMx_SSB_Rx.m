@@ -84,13 +84,32 @@ function [BER_X,SNR_X] = zp_SP_SC_QAMx_SSB_Rx(ParamControl,ParamRxDSP,ParamSig,P
                         num_zero_insertion = 768*alpha; 
                     end
                 else
-                    if ParamRxDSP.KKoverSamp == 90/30
-                        Nfft = 1280*alpha;
-                        num_zero_insertion = 256*alpha;  
+                    % from R_ADC -> Baud*KKoverSamp
+                    if ParamRxDSP.KKoverSamp == 72/30
+                        Nfft = 1024*alpha;
+                        num_zero_insertion = 128*alpha;  
+                    elseif ParamRxDSP.KKoverSamp == 80/30
+                        Nfft = 1024*alpha;
+                        num_zero_insertion = 256*alpha;
+                    elseif ParamRxDSP.KKoverSamp == 84/30
+                        Nfft = 1024*alpha;
+                        num_zero_insertion = 320*alpha; 
+                    elseif ParamRxDSP.KKoverSamp == 88/30
+                        Nfft = 1024*alpha;
+                        num_zero_insertion = 384*alpha;
+                    elseif ParamRxDSP.KKoverSamp == 96/30
+                        Nfft = 1024*alpha;
+                        num_zero_insertion = 512*alpha;
+                    elseif ParamRxDSP.KKoverSamp == 104/30
+                        Nfft = 1024*alpha;
+                        num_zero_insertion = 640*alpha; 
+                    elseif ParamRxDSP.KKoverSamp == 112/30
+                        Nfft = 1024*alpha;
+                        num_zero_insertion = 768*alpha; 
                     end
                 end
                 if (ParamControl.FEC_option == 1 && ParamRxDSP.KKoverSamp ~= 64/28) ||...
-                        (ParamControl.FEC_option == 2 && ParamRxDSP.KKoverSamp ~= 75/30)
+                        (ParamControl.FEC_option == 2 && ParamRxDSP.KKoverSamp ~= 64/30)
                     num_fft_block = ceil(length(Rx_I_X)/Nfft);
 
                     Rx_I_X_len = length(Rx_I_X);
@@ -113,8 +132,12 @@ function [BER_X,SNR_X] = zp_SP_SC_QAMx_SSB_Rx(ParamControl,ParamRxDSP,ParamSig,P
                         end
                     end
                     Rx_I_X = Rx_I_X_temp; 
-                    Rx_I_X = Rx_I_X(1:round(Rx_I_X_len*ParamRxDSP.KKoverSamp/64*28));
-
+                    switch ParamControl.FEC_option 
+                        case 1
+                            Rx_I_X = Rx_I_X(1:round(Rx_I_X_len*ParamRxDSP.KKoverSamp/64*28));
+                        case 2
+                            Rx_I_X = Rx_I_X(1:round(Rx_I_X_len*ParamRxDSP.KKoverSamp/64*30));
+                    end
                 end            
             end
                         
@@ -213,12 +236,10 @@ function [BER_X,SNR_X] = zp_SP_SC_QAMx_SSB_Rx(ParamControl,ParamRxDSP,ParamSig,P
         %% Freq down-conversion + LPF + resample
         if ParamControl.RxDSP_practical_implementation_or_Not
 
-            %% freq down-conversion + LPF + resample
+           %% freq down-conversion + LPF + resample
             alpha = ParamRxDSP.FFT_size_ratio;
             if ParamControl.VSB_or_Not
-    %             num_circshift = -265*alpha;
-    %             num_circshift = -252*alpha;
-                 num_circshift = -ParamSig.Ncircshift*alpha;
+                num_circshift = -ParamSig.Ncircshift*alpha;
             else
                 num_circshift = -ParamSig.Ncircshift*alpha;
             end
@@ -262,16 +283,36 @@ function [BER_X,SNR_X] = zp_SP_SC_QAMx_SSB_Rx(ParamControl,ParamRxDSP,ParamSig,P
                         num_zero_discard = 512*alpha;
                     end
                 case 2
-                    if ParamRxDSP.KKoverSamp == 75/30
+                    if ParamRxDSP.KKoverSamp == 64/30
+                        Nfft = 1024*alpha;
+
+                        num_zero_discard = 64*alpha; 
+
+                    elseif ParamRxDSP.KKoverSamp == 72/30
+                        Nfft = 1152*alpha;
+
+                        num_zero_discard = 192*alpha; 
+
+                    elseif ParamRxDSP.KKoverSamp == 80/30
                         Nfft = 1280*alpha;
-                        num_circshift = -284*alpha;
-                        num_zero_discard = 256*alpha;
-                    end
-                    if ParamRxDSP.KKoverSamp == 90/30
+
+                        num_zero_discard = 320*alpha;
+                    elseif ParamRxDSP.KKoverSamp == 88/30
+                        Nfft = 1408*alpha;
+
+                        num_zero_discard = 448*alpha;
+                    elseif ParamRxDSP.KKoverSamp == 96/30
                         Nfft = 1536*alpha;
 
-                        num_circshift = -284*alpha;
-                        num_zero_discard = 512*alpha;
+                        num_zero_discard = 576*alpha;
+                    elseif ParamRxDSP.KKoverSamp == 104/30
+                        Nfft = 1536*alpha;
+
+                        num_zero_discard = 704*alpha;
+                    elseif ParamRxDSP.KKoverSamp == 112/30
+                        Nfft = 1536*alpha;
+
+                        num_zero_discard = 832*alpha;    
                     end
             end
             roll_off = ParamSig.roll_off;
@@ -472,7 +513,7 @@ function [BER_X,SNR_X] = zp_SP_SC_QAMx_SSB_Rx(ParamControl,ParamRxDSP,ParamSig,P
                 figure;plot(abs(fftshift(fft(bn))));title('bn Freq domain');
                 figure;plot(10*log10(abs(fftshift(fft(bn)))));title('bn Freq domain in dB');
             end
-%             save('SSB_h.mat','bn');
+%             save('SSB_h_SD.mat','bn');
             [Rx_Symbols_X] = QAMx_LMS_DD(Rx_Time_Data_X((ParamRxDSP.Train_Sequence_Length*Samples_Per_Symbol+1-M):end),...
                                           bn,SE,... 
                                           ParamRxDSP.LMS_DD_step,ParamControl.Update_Eqtap_or_Not,Samples_Per_Symbol,...
@@ -510,7 +551,7 @@ function [BER_X,SNR_X] = zp_SP_SC_QAMx_SSB_Rx(ParamControl,ParamRxDSP,ParamSig,P
     end
     
     if ParamControl.Add_internal_noise_or_Not
-        Rx_Symbols_X = Add_AWGN(Rx_Symbols_X,20,1,1);
+        Rx_Symbols_X = Add_AWGN(Rx_Symbols_X,20);
     end
     Tx_Symbols_X = pwr_normalization(Tx_Symbols_X(ParamRxDSP.Head+1:end-ParamRxDSP.Head));  
     

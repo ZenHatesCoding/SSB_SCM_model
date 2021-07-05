@@ -1,12 +1,12 @@
 %% Block Control
-ParamControl.PCA_Enable_or_Not = 1;
+ParamControl.PCA_Enable_or_Not = 0;
 
 %% Plot
 ParamControl.Plot_VSB_filter_or_Not = 0;
 ParamControl.Plot_Spectrum_or_Not = 0;
 ParamControl.Plot_CrossCorr_or_Not = 0;
 ParamControl.Equalization_Plot_Conv_or_Not = 0;
-ParamControl.Plot_Constellation_or_Not = 0;
+ParamControl.Plot_Constellation_or_Not = 1;
 ParamControl.Plot_Noise_or_Not = 0;
 ParamControl.Plot_Error_or_Not = 0;
 ParamControl.Plot_Power_Pie_or_Not = 0;
@@ -79,7 +79,9 @@ ParamControl.PD_LPF_or_Not = 1;
     
 % ADC
 ParamControl.Add_ADC_thermal_noise = 1;
-ParamControl.Add_internal_noise_or_Not = 0; % only for QAM now
+% For DSP
+ParamControl.Add_internal_noise_or_Not = 1; % only for QAM now
+
 %% Rx DSP 
 ParamControl.Digital_Resample_Before_KK_or_Not = 1;
 ParamControl.RxDSP_practical_implementation_or_Not = 1;
@@ -88,7 +90,7 @@ ParamControl.Use_DD_or_KK = 0; % DD = 1 KK = 0 (also includes SSBI mitigation)
     ParamControl.KK_option = 2; %0 normal KK, 
                                 %1 KK w/o upsamp
                                 %2 iterative KK
-                                %3 iterKK for VSB LN model (no practical impelmentation)
+                                %3 iterKK for VSB 
                                 %4 iterative SSBI mitigation
 
     if ParamControl.VSB_or_Not == 1
@@ -143,5 +145,5 @@ if ParamControl.Curve_Fitting_or_Not == 1
     ParamControl.RxPreAmp_or_Not = 1;
 end
 %% FEC option
-ParamControl.FEC_option = 1;% 1 HD-FEC, 2 SD-FEC
+ParamControl.FEC_option = 2;% 1 HD-FEC, 2 SD-FEC
 

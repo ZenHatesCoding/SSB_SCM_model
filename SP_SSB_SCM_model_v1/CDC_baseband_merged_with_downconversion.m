@@ -3,23 +3,40 @@ function Output_Samples = CDC_baseband_merged_with_downconversion(Input_Samples,
     alpha = ParamRxDSP.FFT_size_ratio;
     num_circshift = -ParamSig.Ncircshift*alpha;
 %     num_circshift = 0;
-    if ParamRxDSP.KKoverSamp == 64/28
-        Nfft = 1024*alpha;
-        num_zero_discard = 128*alpha; 
-
-    elseif ParamRxDSP.KKoverSamp == 72/28
-        Nfft = 1152*alpha;
-        num_zero_discard = 256*alpha; 
-
-    elseif ParamRxDSP.KKoverSamp == 80/28
-        Nfft = 1280*alpha;
-        num_zero_discard = 384*alpha;
-    elseif ParamRxDSP.KKoverSamp == 88/28
-        Nfft = 1408*alpha;
-        num_zero_discard = 512*alpha;
-    elseif ParamRxDSP.KKoverSamp == 96/28
-        Nfft = 1536*alpha;
-        num_zero_discard = 640*alpha;  
+    if ParamControl.FEC_option == 1 
+        if ParamRxDSP.KKoverSamp == 64/28
+            Nfft = 1024*alpha;
+            num_zero_discard = 128*alpha; 
+        elseif ParamRxDSP.KKoverSamp == 72/28
+            Nfft = 1152*alpha;
+            num_zero_discard = 256*alpha; 
+        elseif ParamRxDSP.KKoverSamp == 80/28
+            Nfft = 1280*alpha;
+            num_zero_discard = 384*alpha;
+        elseif ParamRxDSP.KKoverSamp == 88/28
+            Nfft = 1408*alpha;
+            num_zero_discard = 512*alpha;
+        elseif ParamRxDSP.KKoverSamp == 96/28
+            Nfft = 1536*alpha;
+            num_zero_discard = 640*alpha;  
+        end
+    else
+        if ParamRxDSP.KKoverSamp == 64/30
+            Nfft = 1024*alpha;
+            num_zero_discard = 64*alpha; 
+        elseif ParamRxDSP.KKoverSamp == 72/30
+            Nfft = 1152*alpha;
+            num_zero_discard = 192*alpha; 
+        elseif ParamRxDSP.KKoverSamp == 80/30
+            Nfft = 1280*alpha;
+            num_zero_discard = 320*alpha;
+        elseif ParamRxDSP.KKoverSamp == 88/30
+            Nfft = 1408*alpha;
+            num_zero_discard = 448*alpha;
+        elseif ParamRxDSP.KKoverSamp == 96/30
+            Nfft = 1536*alpha;
+            num_zero_discard = 576*alpha;  
+        end      
     end
 
     roll_off = ParamSig.roll_off;
@@ -67,8 +84,12 @@ function Output_Samples = CDC_baseband_merged_with_downconversion(Input_Samples,
     H = [ones(1,Nfft/4),H,ones(1,Nfft/4)];
     H = 1;
     
-    
-    load('SSB_h.mat');
+    switch ParamControl.FEC_option
+        case 1
+            load('SSB_h.mat');
+        case 2
+            load('SSB_h_SD.mat');
+    end
     
     H3 = fftshift(fft(bn.',Nfft-num_zero_discard));
     

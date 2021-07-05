@@ -41,46 +41,60 @@ switch ParamControl.FEC_option
 
         N_opM = Nfft2*N_opM1 + Nfft1*N_opM2;
         N_opA = Nfft2*N_opA1 + Nfft1*N_opA2;
+    case 2
+        % 960 = 3*5*64 FFT 
+        Nfft1 = 15;
+        Nfft2 = 64;
+        
+        Nfft11 = 3;
+        Nfft12 = 5;
+        N_opM11 = 4;
+        N_opA11 = 12; 
+        N_opM12 = 10;
+        N_opA12 = 34;
+        
+        N_opM1 = Nfft12*N_opM11 + Nfft11*N_opM12;
+        N_opA1 = Nfft12*N_opA11 + Nfft11*N_opA12;
+        
+        [N_opM2,N_opA2] = numOP_SplitRadix_FFT(Nfft2);
 
-        % 1024 FFT
-        Nfft3 = 1024;
-        [N_opM3,N_opA3] = numOP_SplitRadix_FFT(Nfft3);
-        % n-fft of real sequence can be implemented as n/2-fft of complex
-        % sequence
-        
-        if ParamControl.VSB_or_Not == 1
-            N_opM3 = N_opM3/2; 
-            N_opA3 = N_opA3/2 + Nfft3/2;
-            N_opR = 4*Nfft1*Nfft2+3*(Nfft3-N_h);
-        else
-            N_opA3 = N_opA3 + Nfft3;
-            N_opR = 6*Nfft1*Nfft2+6*(Nfft3-N_h);
-        end
-        
-        N_tap = ceil(Nfft3/ParamDAC.DAC_Rate*ParamSig.Baud_Rate*(1+ParamSig.roll_off));
-        
-        N_opM = N_opM + N_opM3 + 3*N_tap;
-        N_opA = N_opA + N_opA3 + 3*N_tap;
+        N_opM = Nfft2*N_opM1 + Nfft1*N_opM2;
+        N_opA = Nfft2*N_opA1 + Nfft1*N_opA2;
+end
+% 1024 FFT
+Nfft3 = 1024;
+[N_opM3,N_opA3] = numOP_SplitRadix_FFT(Nfft3);
+% n-fft of real sequence can be implemented as n/2-fft of complex
+% sequence
 
-        % FFT/IFFT, save i/o sequence
-        
-        
-        
-        
-        n_parallel = ParamDAC.DAC_Rate/f_clk;
-        
-        if ParamControl.VSB_or_Not == 1
-            N_opG = (2*Nfft1*Nfft2+2*(Nfft3-N_h))*ceil(log2(n_parallel));
-        else
-            N_opG = 2*(Nfft1*Nfft2+2*(Nfft3-N_h))*ceil(log2(n_parallel));
-        end
-        
-        
-        ParamECA_DSP.E_Tx_resamp = n_samp*(N_opM*ParamCMOS.E_opM+N_opA*ParamCMOS.E_opA+n_DAC*N_opR*ParamCMOS.E_opR+N_opG*ParamCMOS.E_opG*n_DAC)/...
-            ((Nfft3-N_h)*R_code*log2(MM));
-
+if ParamControl.VSB_or_Not == 1
+    N_opM3 = N_opM3/2; 
+    N_opA3 = N_opA3/2 + Nfft3/2;
+    N_opR = 4*Nfft1*Nfft2+3*(Nfft3-N_h);
+else
+    N_opA3 = N_opA3 + Nfft3;
+    N_opR = 6*Nfft1*Nfft2+6*(Nfft3-N_h);
 end
 
+N_tap = ceil(Nfft3/ParamDAC.DAC_Rate*ParamSig.Baud_Rate*(1+ParamSig.roll_off));
+
+N_opM = N_opM + N_opM3 + 3*N_tap;
+N_opA = N_opA + N_opA3 + 3*N_tap;
+
+% FFT/IFFT, save i/o sequence
+
+
+n_parallel = ParamDAC.DAC_Rate/f_clk;
+
+if ParamControl.VSB_or_Not == 1
+    N_opG = (2*Nfft1*Nfft2+2*(Nfft3-N_h))*ceil(log2(n_parallel));
+else
+    N_opG = 2*(Nfft1*Nfft2+2*(Nfft3-N_h))*ceil(log2(n_parallel));
+end
+
+
+ParamECA_DSP.E_Tx_resamp = n_samp*(N_opM*ParamCMOS.E_opM+N_opA*ParamCMOS.E_opA+n_DAC*N_opR*ParamCMOS.E_opR+N_opG*ParamCMOS.E_opG*n_DAC)/...
+    ((Nfft3-N_h)*R_code*log2(MM));
 
 
 %% Rx-DSP resampling before KK
@@ -116,9 +130,6 @@ N_opG = (Nfft+2*(Nfft-ParamRxDSP.hilbert_tap))*ceil(log2(n_parallel));
 if ParamControl.KK_option == 0       
     N_opM = N_opM+ Nfft; % 1 real mul after cos()
     N_opRO = 3*Nfft; % 3 LUT
-   
-    
-
     
 elseif  ParamControl.KK_option == 1
     N_opM = N_opM + 3*Nfft;
@@ -149,123 +160,91 @@ ParamECA_DSP.E_KK =  n_samp*(N_opM*ParamCMOS.E_opM+N_opA*ParamCMOS.E_opA+...
 %% Rx-DSP Resample at Rx after KK (downconversion + LPF+CDC)
 N_h = ParamRxDSP.CD_tap;
 n_parallel = 2*ParamSig.Baud_Rate/f_clk;
-if ParamRxDSP.KKoverSamp == 64/28
-    n_samp = 2;
-    Nfft1 = 1024;
 
-    [N_opM1,N_opA1] = numOP_SplitRadix_FFT(Nfft1);
-    
-    N_opM1 = N_opM1/2;
-    N_opA1 = N_opA1/2 + Nfft1*4/2;
-    
+n_samp = 2;
 
-    Nfft2 = 7;
-    Nfft3 = 128;
+switch ParamRxDSP.KKoverSamp*ParamSig.Baud_Rate/1e9 
+    case 64
+        Nfft1 = 1024;
+        Nfft2 = 1;
+        [N_opM1,N_opA1] = numOP_SplitRadix_FFT(Nfft1);
+        N_opM = N_opM1/2;
+        N_opA = N_opA1/2 + Nfft1*4/2;
+    case 72
+        Nfft1 = 9;
+        Nfft2 = 128;
 
-    N_opM2 = 8*2;
-    N_opA2 = 36*2;
+        N_opM1 = 20; 
+        N_opA1 = 84;
+        [N_opM2,N_opA2] = numOP_SplitRadix_FFT(Nfft2);
+        N_opM = Nfft2*N_opM1 + Nfft1*N_opM2;
+        N_opA = Nfft2*N_opA1 + Nfft1*N_opA2;
 
-    [N_opM3,N_opA3] = numOP_SplitRadix_FFT(Nfft3);
+        N_opM = N_opM/2;
+        N_opA = N_opA/2 + Nfft1*Nfft2*4/2;
+    case 80
+        Nfft1 = 5;
+        Nfft2 = 256;
 
-    N_opM = N_opM1 + Nfft2*N_opM3 + Nfft3*N_opM2;
-    N_opA = N_opA1 + Nfft2*N_opA3 + Nfft3*N_opA2;
-    Nfft_out = Nfft2*Nfft3;
-    Nfft_in = Nfft1;
-elseif ParamRxDSP.KKoverSamp == 72/28
-    %1152 -> 896
-    n_samp = 2;
-    Nfft1 = 9;
-    Nfft2 = 128;
-    
-    N_opM1 = 20; 
-    N_opA1 = 84;
-    [N_opM2,N_opA2] = numOP_SplitRadix_FFT(Nfft2);
-    N_opM = Nfft2*N_opM1 + Nfft1*N_opM2;
-    N_opA = Nfft2*N_opA1 + Nfft1*N_opA2;
-   
-    N_opM = N_opM/2;
-    N_opA = N_opA/2 + Nfft1*Nfft2*4/2;
+        N_opM1 = 5*2; 
+        N_opA1 = 17*2;
+        [N_opM2,N_opA2] = numOP_SplitRadix_FFT(Nfft2);
+        N_opM = Nfft2*N_opM1 + Nfft1*N_opM2;
+        N_opA = Nfft2*N_opA1 + Nfft1*N_opA2;
 
+        N_opM = N_opM/2;
+        N_opA = N_opA/2 + Nfft1*Nfft2*4/2;
+    case 88
+        Nfft1 = 11;
+        Nfft2 = 128;
 
-    Nfft3 = 7;
-    Nfft4 = 128;
+        N_opM1 = 40; 
+        N_opA1 = 168;
+        [N_opM2,N_opA2] = numOP_SplitRadix_FFT(Nfft2);
+        N_opM = Nfft2*N_opM1 + Nfft1*N_opM2;
+        N_opA = Nfft2*N_opA1 + Nfft1*N_opA2;
 
-    N_opM3 = 8*2;
-    N_opA3 = 36*2;
-
-    [N_opM4,N_opA4] = numOP_SplitRadix_FFT(Nfft4);
-
-    N_opM = N_opM + Nfft3*N_opM4 + Nfft4*N_opM3;
-    N_opA = N_opA + Nfft3*N_opA4 + Nfft4*N_opA3;
-    
-    
-    
-    Nfft_out = Nfft3*Nfft4;
-    Nfft_in = Nfft1*Nfft2;
-
-elseif ParamRxDSP.KKoverSamp == 80/28
-    %1280 -> 896
-    n_samp = 2;
-    Nfft1 = 5;
-    Nfft2 = 256;
-    
-    N_opM1 = 5*2; 
-    N_opA1 = 17*2;
-    [N_opM2,N_opA2] = numOP_SplitRadix_FFT(Nfft2);
-    N_opM = Nfft2*N_opM1 + Nfft1*N_opM2;
-    N_opA = Nfft2*N_opA1 + Nfft1*N_opA2;
-   
-    N_opM = N_opM/2;
-    N_opA = N_opA/2 + Nfft1*Nfft2*4/2;
-
-
-    Nfft3 = 7;
-    Nfft4 = 128;
-
-    N_opM3 = 8*2;
-    N_opA3 = 36*2;
-
-    [N_opM4,N_opA4] = numOP_SplitRadix_FFT(Nfft4);
-
-    N_opM = N_opM + Nfft3*N_opM4 + Nfft4*N_opM3;
-    N_opA = N_opA + Nfft3*N_opA4 + Nfft4*N_opA3;
-    
-    
-    
-    Nfft_out = Nfft3*Nfft4;
-    Nfft_in = Nfft1*Nfft2;
-elseif ParamRxDSP.KKoverSamp == 88/28
-    %1408 -> 896
-    n_samp = 2;
-    Nfft1 = 11;
-    Nfft2 = 128;
-    
-    N_opM1 = 40; 
-    N_opA1 = 168;
-    [N_opM2,N_opA2] = numOP_SplitRadix_FFT(Nfft2);
-    N_opM = Nfft2*N_opM1 + Nfft1*N_opM2;
-    N_opA = Nfft2*N_opA1 + Nfft1*N_opA2;
-   
-    N_opM = N_opM/2;
-    N_opA = N_opA/2 + Nfft1*Nfft2*4/2;
-
-
-    Nfft3 = 7;
-    Nfft4 = 128;
-
-    N_opM3 = 8*2;
-    N_opA3 = 36*2;
-
-    [N_opM4,N_opA4] = numOP_SplitRadix_FFT(Nfft4);
-
-    N_opM = N_opM + Nfft3*N_opM4 + Nfft4*N_opM3;
-    N_opA = N_opA + Nfft3*N_opA4 + Nfft4*N_opA3;
-    
-    
-    
-    Nfft_out = Nfft3*Nfft4;
-    Nfft_in = Nfft1*Nfft2;
+        N_opM = N_opM/2;
+        N_opA = N_opA/2 + Nfft1*Nfft2*4/2;        
 end
+
+switch ParamControl.FEC_option
+    case 1
+        Nfft3 = 7;
+        Nfft4 = 128;
+
+        N_opM3 = 8*2;
+        N_opA3 = 36*2;
+
+        [N_opM4,N_opA4] = numOP_SplitRadix_FFT(Nfft4);
+
+        N_opM = N_opM + Nfft3*N_opM4 + Nfft4*N_opM3;
+        N_opA = N_opA + Nfft3*N_opA4 + Nfft4*N_opA3;
+
+        Nfft_out = Nfft3*Nfft4;
+        Nfft_in = Nfft1*Nfft2;
+    case 2
+        Nfft3 = 15;
+        Nfft4 = 64;
+
+        Nfft31 = 3;
+        Nfft32 = 5;
+        N_opM31 = 4;
+        N_opA31 = 12; 
+        N_opM32 = 10;
+        N_opA32 = 34;
+        
+        N_opM3 = Nfft32*N_opM31 + Nfft31*N_opM32;
+        N_opA3 = Nfft32*N_opA31 + Nfft31*N_opA32;
+        
+        [N_opM4,N_opA4] = numOP_SplitRadix_FFT(Nfft4);
+        N_opM = N_opM + Nfft3*N_opM4 + Nfft4*N_opM3;
+        N_opA = N_opA + Nfft3*N_opA4 + Nfft4*N_opA3;
+
+        Nfft_out = Nfft3*Nfft4;
+        Nfft_in = Nfft1*Nfft2;
+end
+
 
 % pointwise multiplication
 
@@ -356,7 +335,7 @@ ParamPCA.P_PD = 0.169 ;
 
 ParamPCA.P_driver = num_driver*2.7/4;
 
-ParamPCA.P_laser_TEC = 1.2*2.4;
+ParamPCA.P_laser_TEC = 1.5*3.5;
 switch ParamControl.Laser_case
     case 1
         ParamPCA.P_laser = 0.08*1.8;
