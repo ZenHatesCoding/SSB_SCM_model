@@ -155,9 +155,9 @@ switch ParamControl.Laser_case
                 end
             case 2
                 if ParamControl.VSB_or_Not
-                    ParamLas.laser_power_dBm = 15.5;
+                    ParamLas.laser_power_dBm = 16.5;
                 else
-                    ParamLas.laser_power_dBm = 14;
+                    ParamLas.laser_power_dBm = 16;
                 end
         end
         ParamLas.Laser_Linewidth = 1e6;
@@ -180,7 +180,7 @@ ParamLas.omega0 = 2*pi*ParamGen.c0/ParamLas.Lambda0;
 ParamLas.omega_ref = 2*pi*ParamGen.c0/ParamLas.Lambda_ref;
 
 %% modulator
-ParamMod.Modulator_Loss_dB = 5; % single modulator
+ParamMod.Modulator_Loss_dB = 6; % single modulator
 ParamMod.Y_branch_Loss_dB = 0.5;
 ParamMod.MMI_Loss_dB = 0.7;
 ParamMod.Modulator_LPF_BW = 44e9;
@@ -309,7 +309,7 @@ switch ParamControl.CSPR_tuning_case
             end
         else
             if ParamControl.VSB_or_Not
-                ParamSys.Carrier_path_pwr_ratio = 0.3;
+                ParamSys.Carrier_path_pwr_ratio = 0.2;
             else
                 ParamSys.Carrier_path_pwr_ratio = 0.18;
             end
@@ -325,8 +325,8 @@ switch ParamControl.CSPR_tuning_case
         end
 end
 
-ParamSys.Vpi = 1.3;
-ParamSys.Vpp_over_Vpi = 1.4;
+ParamSys.Vpi = 1.5;
+ParamSys.Vpp_over_Vpi = 1.3;
 
 % if ParamControl.VSB_or_Not == 0
 %     ParamSys.Vbias_over_Vpi = ParamSys.Vbias_over_Vpi*sqrt(2);
@@ -357,8 +357,8 @@ if ParamControl.Digital_Resample_Before_KK_or_Not
                 ParamRxDSP.KKoverSamp = 64/28;
             end
         case 2
-            if ParamControl.KK_option == 0
-                ParamRxDSP.KKoverSamp = 80/30;
+            if ParamControl.VSB_or_Not
+                ParamRxDSP.KKoverSamp = 72/30;
             else
                 ParamRxDSP.KKoverSamp = 64/30;
             end

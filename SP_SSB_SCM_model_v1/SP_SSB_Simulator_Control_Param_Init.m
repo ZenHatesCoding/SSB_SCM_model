@@ -32,7 +32,7 @@ ParamControl.Preemphasis_or_Not = 1;
 ParamControl.Clipping_or_Not = 1;
 
 %% Physical layer
-ParamControl.VSB_or_Not = 0; % related to how many dac channels to use
+ParamControl.VSB_or_Not = 1; % related to how many dac channels to use
 
     
 % DAC
@@ -88,11 +88,11 @@ ParamControl.Use_DD_or_KK = 0; % DD = 1 KK = 0 (also includes SSBI mitigation)
     ParamControl.KK_option = 2; %0 normal KK, 
                                 %1 KK w/o upsamp
                                 %2 iterative KK
-                                %3 iterKK for VSB LN model (no practical impelmentation)
+                                %3 iterKK for VSB 
                                 %4 iterative SSBI mitigation
 
     if ParamControl.VSB_or_Not == 1
-        ParamControl.KK_option = 3;
+        ParamControl.KK_option = 2;
     end
     if ParamControl.KK_option == 0
         ParamControl.Hilbert_time_or_Freq = 0; % 1 time 0 freq 

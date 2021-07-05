@@ -132,8 +132,12 @@ function [BER_X,SNR_X] = zp_SP_SC_QAMx_SSB_Rx(ParamControl,ParamRxDSP,ParamSig,P
                         end
                     end
                     Rx_I_X = Rx_I_X_temp; 
-                    Rx_I_X = Rx_I_X(1:round(Rx_I_X_len*ParamRxDSP.KKoverSamp/64*28));
-
+                    switch ParamControl.FEC_option 
+                        case 1
+                            Rx_I_X = Rx_I_X(1:round(Rx_I_X_len*ParamRxDSP.KKoverSamp/64*28));
+                        case 2
+                            Rx_I_X = Rx_I_X(1:round(Rx_I_X_len*ParamRxDSP.KKoverSamp/64*30));
+                    end
                 end            
             end
                         
@@ -232,12 +236,10 @@ function [BER_X,SNR_X] = zp_SP_SC_QAMx_SSB_Rx(ParamControl,ParamRxDSP,ParamSig,P
         %% Freq down-conversion + LPF + resample
         if ParamControl.RxDSP_practical_implementation_or_Not
 
-            %% freq down-conversion + LPF + resample
+           %% freq down-conversion + LPF + resample
             alpha = ParamRxDSP.FFT_size_ratio;
             if ParamControl.VSB_or_Not
-    %             num_circshift = -265*alpha;
-    %             num_circshift = -252*alpha;
-                 num_circshift = -ParamSig.Ncircshift*alpha;
+                num_circshift = -ParamSig.Ncircshift*alpha;
             else
                 num_circshift = -ParamSig.Ncircshift*alpha;
             end
@@ -281,16 +283,36 @@ function [BER_X,SNR_X] = zp_SP_SC_QAMx_SSB_Rx(ParamControl,ParamRxDSP,ParamSig,P
                         num_zero_discard = 512*alpha;
                     end
                 case 2
-                    if ParamRxDSP.KKoverSamp == 75/30
+                    if ParamRxDSP.KKoverSamp == 64/30
+                        Nfft = 1024*alpha;
+
+                        num_zero_discard = 64*alpha; 
+
+                    elseif ParamRxDSP.KKoverSamp == 72/30
+                        Nfft = 1152*alpha;
+
+                        num_zero_discard = 192*alpha; 
+
+                    elseif ParamRxDSP.KKoverSamp == 80/30
                         Nfft = 1280*alpha;
-                        num_circshift = -284*alpha;
-                        num_zero_discard = 256*alpha;
-                    end
-                    if ParamRxDSP.KKoverSamp == 90/30
+
+                        num_zero_discard = 320*alpha;
+                    elseif ParamRxDSP.KKoverSamp == 88/30
+                        Nfft = 1408*alpha;
+
+                        num_zero_discard = 448*alpha;
+                    elseif ParamRxDSP.KKoverSamp == 96/30
                         Nfft = 1536*alpha;
 
-                        num_circshift = -284*alpha;
-                        num_zero_discard = 512*alpha;
+                        num_zero_discard = 576*alpha;
+                    elseif ParamRxDSP.KKoverSamp == 104/30
+                        Nfft = 1536*alpha;
+
+                        num_zero_discard = 704*alpha;
+                    elseif ParamRxDSP.KKoverSamp == 112/30
+                        Nfft = 1536*alpha;
+
+                        num_zero_discard = 832*alpha;    
                     end
             end
             roll_off = ParamSig.roll_off;
