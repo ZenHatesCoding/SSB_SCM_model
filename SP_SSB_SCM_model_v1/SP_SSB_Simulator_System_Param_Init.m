@@ -150,17 +150,21 @@ switch ParamControl.Laser_case
             case 1
                 if ParamControl.VSB_or_Not
                     ParamLas.laser_power_dBm = 17.5;
+                    ParamLas.Laser_Linewidth = 1e6;
                 else
                     ParamLas.laser_power_dBm = 14.5;
+                    ParamLas.Laser_Linewidth = 1e6;
                 end
             case 2
                 if ParamControl.VSB_or_Not
-                    ParamLas.laser_power_dBm = 16.5;
+                    ParamLas.laser_power_dBm = 17.5;
+                    ParamLas.Laser_Linewidth = 1e6;
                 else
                     ParamLas.laser_power_dBm = 16;
+                    ParamLas.Laser_Linewidth = 1e6;
                 end
         end
-        ParamLas.Laser_Linewidth = 1e6;
+        
 end
 if ParamControl.Curve_Fitting_or_Not
     ParamLas.Laser_Linewidth = 200e3;
@@ -187,6 +191,10 @@ ParamMod.Modulator_LPF_BW = 44e9;
 ParamMod.Modulator_LPF_order = 6;
 ParamMod.SSC_Loss_dB = 2;
 ParamMod.carrier_path_loss_dB = 0.1;
+
+ParamMod.IQAmpImbalance_dB = 0.5;
+ParamMod.IQPhaseImbalance_deg = 5 ; % degree
+ParamMod.IQskew = 1e-12; % [s]
 %% Fiber
 ParamFib.FiberLength = 40e3;
 if ParamControl.Curve_Fitting_or_Not
@@ -224,7 +232,7 @@ if ParamControl.VSB_or_Not
         case 5
             ParamVSB.Opt_Flt_offset = 3e9; 
             % ParamVSB.Opt_Flt_offset =ParamSig.GuardBand;
-            ParamVSB.Opt_Flt_drift = -2.5e9; 
+            ParamVSB.Opt_Flt_drift = 2.5e9; 
             ParamVSB.Opt_Flt_ILoss_dB = 0.5 + ParamChan.coupler_loss_dB*2;
     end
 else
@@ -309,9 +317,9 @@ switch ParamControl.CSPR_tuning_case
             end
         else
             if ParamControl.VSB_or_Not
-                ParamSys.Carrier_path_pwr_ratio = 0.2;
+                ParamSys.Carrier_path_pwr_ratio = 0.22;
             else
-                ParamSys.Carrier_path_pwr_ratio = 0.18;
+                ParamSys.Carrier_path_pwr_ratio = 0.14;
             end
         end
         
@@ -352,13 +360,13 @@ if ParamControl.Digital_Resample_Before_KK_or_Not
     switch ParamControl.FEC_option
         case 1
             if ParamControl.VSB_or_Not
-                ParamRxDSP.KKoverSamp = 80/28;
+                ParamRxDSP.KKoverSamp = 72/28;
             else
                 ParamRxDSP.KKoverSamp = 64/28;
             end
         case 2
             if ParamControl.VSB_or_Not
-                ParamRxDSP.KKoverSamp = 72/30;
+                ParamRxDSP.KKoverSamp = 64/30;
             else
                 ParamRxDSP.KKoverSamp = 64/30;
             end

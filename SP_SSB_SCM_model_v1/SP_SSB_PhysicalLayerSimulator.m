@@ -143,7 +143,17 @@ if ParamControl.new_capture
                     if ParamControl.Modulator_LPF_or_Not
                         Tx_Time_Data_I = lpfilt(Tx_Time_Data_I,ParamDAC.DAC_Rate,ParamMod.Modulator_LPF_BW,'gaussian',ParamMod.Modulator_LPF_order);
                         Tx_Time_Data_Q = lpfilt(Tx_Time_Data_Q,ParamDAC.DAC_Rate,ParamMod.Modulator_LPF_BW,'gaussian',ParamMod.Modulator_LPF_order);
-                    end            
+                    end 
+                    
+                    IQ_Ampimbalance = 10^(-0.1*ParamMod.IQAmpImbalance_dB);
+                    Tx_Time_Data_Q = Tx_Time_Data_Q*exp(1i*pi/180*ParamMod.IQPhaseImbalance_deg);
+                    Tx_Time_Data_Q = Tx_Time_Data_Q*sqrt(2/(IQ_Ampimbalance^2+1));
+                    omega = linspace(-ParamDAC.DAC_Rate/2,ParamDAC.DAC_Rate/2,length(Tx_Time_Data_Q));
+                    Tx_Time_Data_Q = ifft(ifftshift(fftshift(fft(Tx_Time_Data_Q)).*exp(1i*omega*ParamMod.IQskew))); 
+                    
+                    Tx_Time_Data_I = Tx_Time_Data_I*sqrt((2*IQ_Ampimbalance^2)/(IQ_Ampimbalance^2+1));
+                    
+                    
                     Tx_Time_Data = Tx_Time_Data_I + 1i*Tx_Time_Data_Q;
                     ParamMod.Modulator_Loss_dB= ParamMod.Modulator_Loss_dB+2*ParamMod.Y_branch_Loss_dB;
                 case 2

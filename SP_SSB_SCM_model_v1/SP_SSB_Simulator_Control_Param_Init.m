@@ -3,7 +3,7 @@ ParamControl.PCA_Enable_or_Not = 0;
 
 %% Plot
 ParamControl.Plot_VSB_filter_or_Not = 0;
-ParamControl.Plot_Spectrum_or_Not = 0;
+ParamControl.Plot_Spectrum_or_Not = 1;
 ParamControl.Plot_CrossCorr_or_Not = 0;
 ParamControl.Equalization_Plot_Conv_or_Not = 0;
 ParamControl.Plot_Constellation_or_Not = 1;
@@ -32,7 +32,7 @@ ParamControl.Preemphasis_or_Not = 1;
 ParamControl.Clipping_or_Not = 1;
 
 %% Physical layer
-ParamControl.VSB_or_Not = 1; % related to how many dac channels to use
+ParamControl.VSB_or_Not = 0; % related to how many dac channels to use
 
     
 % DAC
@@ -92,7 +92,7 @@ ParamControl.Use_DD_or_KK = 0; % DD = 1 KK = 0 (also includes SSBI mitigation)
                                 %4 iterative SSBI mitigation
 
     if ParamControl.VSB_or_Not == 1
-        ParamControl.KK_option = 2;
+        ParamControl.KK_option = 3;
     end
     if ParamControl.KK_option == 0
         ParamControl.Hilbert_time_or_Freq = 0; % 1 time 0 freq 

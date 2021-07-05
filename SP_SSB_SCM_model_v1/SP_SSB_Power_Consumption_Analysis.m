@@ -335,7 +335,7 @@ ParamPCA.P_PD = 0.169 ;
 
 ParamPCA.P_driver = num_driver*2.7/4;
 
-ParamPCA.P_laser_TEC = 1.2*2.4;
+ParamPCA.P_laser_TEC = 1.5*3.5;
 switch ParamControl.Laser_case
     case 1
         ParamPCA.P_laser = 0.08*1.8;
