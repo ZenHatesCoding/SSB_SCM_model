@@ -106,12 +106,13 @@ if ParamControl.new_capture
     end
     
     if ParamControl.Add_DAC_noise
-        IFFT_bin_length = ParamDAC.DAC_Rate/ParamSig.Baud_Rate;
+        
         if ParamControl.VSB_or_Not
-            Tx_Time_Data = Add_AWGN_real(Tx_Time_Data,ParamDAC.DAC_SNR,IFFT_bin_length,1); 
+            % at DAC rate
+            Tx_Time_Data = Add_AWGN_real(Tx_Time_Data,ParamDAC.DAC_SNR); 
         else
-            Tx_Time_Data_I = Add_AWGN_real(real(Tx_Time_Data),ParamDAC.DAC_SNR,IFFT_bin_length,1); 
-            Tx_Time_Data_Q = Add_AWGN_real(imag(Tx_Time_Data),ParamDAC.DAC_SNR,IFFT_bin_length,1); 
+            Tx_Time_Data_I = Add_AWGN_real(real(Tx_Time_Data),ParamDAC.DAC_SNR); 
+            Tx_Time_Data_Q = Add_AWGN_real(imag(Tx_Time_Data),ParamDAC.DAC_SNR); 
             Tx_Time_Data = Tx_Time_Data_I + 1i*Tx_Time_Data_Q;
         end
     end
@@ -233,8 +234,8 @@ if ParamControl.new_capture
     end
     % add AWGN (laser + penalty)
     if ParamControl.Add_AWGN_beforeFiber_or_Not
-        IFFT_bin_length = ParamDAC.DAC_Rate/ParamSig.Baud_Rate;
-        Tx_Time_Data = Add_AWGN(Tx_Time_Data,ParamChan.SNR,IFFT_bin_length,1); 
+        % at DAC rate
+        Tx_Time_Data = Add_AWGN(Tx_Time_Data,ParamChan.SNR_dB); 
     end
 
 
@@ -351,8 +352,9 @@ if ParamControl.new_capture
     end
     
     if ParamControl.Add_AWGN_afterFiber_or_Not
-        IFFT_bin_length = ParamSys.Analog_Rate/ParamSig.Baud_Rate;
-        Tx_Time_Data = Add_AWGN(Tx_Time_Data,ParamChan.SNR,IFFT_bin_length,1); 
+        % at Analog rate      
+        Tx_Time_Data = Add_AWGN(Tx_Time_Data,ParamChan.SNR_dB...
+            +10*log10(ParamDAC.DAC_Rate/ParamSys.Analog_Rate)); 
     end
     % update Freq Vector
     DTime = 1/ParamSys.Analog_Rate;
@@ -482,8 +484,8 @@ end
                 
                 ParamPhysicalModel.SNR_PD_dB = 10*log10(SNR_PD_Linear);
                 Rx_I = resample(Rx_I,delta_f*2,ParamSys.Analog_Rate);
-                IFFT_bin_length = 2*delta_f/ParamSig.Baud_Rate;
-                Rx_I = Add_AWGN_real(Rx_I,ParamPhysicalModel.SNR_PD_dB,IFFT_bin_length,1);
+                % at rate = delta_f*2;
+                Rx_I = Add_AWGN_real(Rx_I,ParamPhysicalModel.SNR_PD_dB);
                 Rx_I = resample(Rx_I,ParamSys.Analog_Rate,delta_f*2);
                 
                 Rx_V = Rx_I*ParamPD.RL_pin;
@@ -495,11 +497,11 @@ end
                                 (2*ParamGen.q_electron*ParamPD.M_apd^2*ParamPD.FA_apd*(ParamPD.R_apd*Received_Pwr+ParamPD.Id_apd)*delta_f+...
                                  4*ParamGen.kB*ParamGen.Temperature/ParamPD.RL_apd*ParamPD.Fn_apd*delta_f);
                 Rx_I = Rx_I*Received_Pwr*ParamPD.R_apd*ParamPD.M_apd; 
-                
+                % at rate = delta_f*2;
                 ParamPhysicalModel.SNR_PD_dB = 10*log10(SNR_PD_Linear);
                 Rx_I = resample(Rx_I,delta_f*2,ParamSys.Analog_Rate);
-                IFFT_bin_length = 2*delta_f/ParamSig.Baud_Rate;
-                Rx_I = Add_AWGN_real(Rx_I,ParamPhysicalModel.SNR_PD_dB,IFFT_bin_length,1);
+          
+                Rx_I = Add_AWGN_real(Rx_I,ParamPhysicalModel.SNR_PD_dB);
                 Rx_I = resample(Rx_I,ParamSys.Analog_Rate,delta_f*2);
                 
                 Rx_V = Rx_I*ParamPD.RL_apd;

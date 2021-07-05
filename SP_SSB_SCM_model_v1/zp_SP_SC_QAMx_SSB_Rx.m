@@ -551,7 +551,7 @@ function [BER_X,SNR_X] = zp_SP_SC_QAMx_SSB_Rx(ParamControl,ParamRxDSP,ParamSig,P
     end
     
     if ParamControl.Add_internal_noise_or_Not
-        Rx_Symbols_X = Add_AWGN(Rx_Symbols_X,20,1,1);
+        Rx_Symbols_X = Add_AWGN(Rx_Symbols_X,20);
     end
     Tx_Symbols_X = pwr_normalization(Tx_Symbols_X(ParamRxDSP.Head+1:end-ParamRxDSP.Head));  
     
