@@ -81,7 +81,7 @@ ParamControl.PD_LPF_or_Not = 1;
 ParamControl.Add_ADC_thermal_noise = 0; % independent of input swing
 ParamControl.Add_ADC_noise_distortion = 1; % defined as SNR
 % For DSP
-ParamControl.Add_internal_noise_or_Not = 1; % only for QAM now
+ParamControl.Add_internal_noise_or_Not = 0; % only for QAM now
 
 %% Rx DSP 
 ParamControl.Digital_Resample_Before_KK_or_Not = 1;

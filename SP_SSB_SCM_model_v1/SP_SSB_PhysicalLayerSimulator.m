@@ -31,7 +31,7 @@ if ParamControl.new_capture
     if ParamControl.VSB_or_Not      
         % add quantization noise
         if ParamControl.Quantization_or_Not
-        Tx_Time_Data = Quantization(Tx_Time_Data,ParamDAC.qnbit_DAC);
+            Tx_Time_Data = Quantization(Tx_Time_Data,ParamDAC.qnbit_DAC);
         end
         if ParamControl.DAC_LPF_or_Not
             switch ParamControl.DAC_LPF_option
@@ -62,8 +62,8 @@ if ParamControl.new_capture
         Tx_Time_Data_I = real(Tx_Time_Data);
         Tx_Time_Data_Q = imag(Tx_Time_Data);
         if ParamControl.Quantization_or_Not
-        Tx_Time_Data_I = Quantization(Tx_Time_Data_I,ParamDAC.qnbit_DAC);
-        Tx_Time_Data_Q = Quantization(Tx_Time_Data_Q,ParamDAC.qnbit_DAC);
+            Tx_Time_Data_I = Quantization(Tx_Time_Data_I,ParamDAC.qnbit_DAC);
+            Tx_Time_Data_Q = Quantization(Tx_Time_Data_Q,ParamDAC.qnbit_DAC);
         end
         if ParamControl.DAC_LPF_or_Not
             switch ParamControl.DAC_LPF_option
@@ -99,6 +99,7 @@ if ParamControl.new_capture
         
         ParamPhysicalModel.Vrms_over_VM_I = 1/VM_I;
         ParamPhysicalModel.Vrms_over_VM_Q = 1/VM_Q;
+        ParamPhysicalModel.Vrms_over_VM = (ParamPhysicalModel.Vrms_over_VM_I + ParamPhysicalModel.Vrms_over_VM_Q)/2;
         Tx_Time_Data = pwr_normalization(Tx_Time_Data_I + 1i*Tx_Time_Data_Q);
         
         ParamPhysicalModel.Vm_pwr_normalized_I = max(max(real(Tx_Time_Data)),-min(real(Tx_Time_Data)));
@@ -175,7 +176,7 @@ if ParamControl.new_capture
                            + Carrier;
             Number_of_Samples = length(Tx_Time_Data);
             Power_Tx_Time_Data = sum(abs(Tx_Time_Data).^2)/Number_of_Samples;
-            ParamPhysicalModel.Tx_optical_Loss_dB = -10*log10(Power_Tx_Time_Data)+2*ParamMod.Y_branch_Loss_dB+ParamMod.MMI_Loss_dB;
+            ParamPhysicalModel.Tx_optical_Loss_dB = -10*log10(Power_Tx_Time_Data)+ParamMod.ThermoPS_Loss_dB+2*ParamMod.Y_branch_Loss_dB+ParamMod.MMI_Loss_dB;
             
         else
             Number_of_Samples = length(Tx_Time_Data);
@@ -235,6 +236,7 @@ if ParamControl.new_capture
     % add AWGN (laser + penalty)
     if ParamControl.Add_AWGN_beforeFiber_or_Not
         % at DAC rate
+        ParamChan.SNR_dB = ParamChan.SNR_dB + 10*log10(2*ParamSig.Baud_Rate/ParamDAC.DAC_Rate); 
         Tx_Time_Data = Add_AWGN(Tx_Time_Data,ParamChan.SNR_dB); 
     end
 
@@ -352,9 +354,9 @@ if ParamControl.new_capture
     end
     
     if ParamControl.Add_AWGN_afterFiber_or_Not
-        % at Analog rate      
-        Tx_Time_Data = Add_AWGN(Tx_Time_Data,ParamChan.SNR_dB...
-            +10*log10(ParamDAC.DAC_Rate/ParamSys.Analog_Rate)); 
+        % at Analog rate  
+        ParamChan.SNR_dB = ParamChan.SNR_dB + 10*log10(2*ParamSig.Baud_Rate/ParamSys.Analog_Rate); 
+        Tx_Time_Data = Add_AWGN(Tx_Time_Data,ParamChan.SNR_dB); 
     end
     % update Freq Vector
     DTime = 1/ParamSys.Analog_Rate;
@@ -508,7 +510,7 @@ end
                 
                 
             case 3 % PIN-TIA NEP model
-                Rx_I = resample(Rx_I,1,2); % trick
+                
                 Rx_V = Rx_I*Received_Pwr*ParamPD.CG; 
                 PD_noise_Vrms = ParamPD.CG*ParamPD.NEP; 
                 ParamPhysicalModel.SNR_PD_dB = 20*log10(rms(Rx_V)/PD_noise_Vrms);
@@ -526,27 +528,39 @@ end
     %% ADC model
     % *********************************************************************
     % ADC noise (brick wall filter is also considered)
+    % this crap is not used currently
+    
+    %% Not used now
     if ParamControl.Add_ADC_thermal_noise
-        Rx_V = resample(Rx_V,ParamADC.ADC_BW*2,ParamSys.Analog_Rate/2);
+        Rx_V = resample(Rx_V,ParamADC.ADC_BW*2,ParamSys.Analog_Rate);
         ADC_noise_power_LN = 10^(ParamADC.ADC_noise_power_dBm/10)/12.5e9*ParamADC.ADC_BW;
         noise = wgn(1,length(Rx_V),10*log10(ADC_noise_power_LN),50,'dBm','real');
         %ADC_noise_rms = rms(noise-mean(noise));
         %ADC_noise_Vpp = max(noise)-min(noise);
         Rx_V = Rx_V + noise;
         ParamADC.SNR_ADC = 10*log10(get_pwr(Rx_V)/get_pwr(noise));
-        Rx_V = resample(Rx_V,ParamSys.Analog_Rate/2,ParamADC.ADC_BW*2); 
+        Rx_V = resample(Rx_V,ParamSys.Analog_Rate,ParamADC.ADC_BW*2); 
         ParamPhysicalModel.SNR_ADC =  ParamADC.SNR_ADC ;
     end
-    
+    %%
     % ADC detection
-    Rx_V = resample(Rx_V,ParamADC.ADC_Rate,ParamSys.Analog_Rate/2);
+    Rx_V = resample(Rx_V,ParamADC.ADC_Rate,ParamSys.Analog_Rate);
     
     ParamPhysicalModel.RV_rms_at_ADC = rms(Rx_V-mean(Rx_V));
     ParamPhysicalModel.RVpp_at_ADC = max(Rx_V)-min(Rx_V);
     
     % Rx_V = circshift(Rx_V,[0,2e3+2]);
+    
+    
+    if ParamControl.Add_ADC_noise_distortion
+        Rx_V = real(Rx_V);
+        Rx_V_mean = mean(Rx_V);
+        Rx_V = Rx_V-Rx_V_mean;
+        Rx_V = Add_AWGN_real(Rx_V,ParamADC.ADC_SNR);
+        Rx_V = Rx_V+Rx_V_mean;
+    end
     if ParamControl.Quantization_or_Not
-        Rx_V = Quantization(real(Rx_V),ParamADC.qnbit_ADC);
+        Rx_V = Quantization(Rx_V,ParamADC.qnbit_ADC);
     end
     
     

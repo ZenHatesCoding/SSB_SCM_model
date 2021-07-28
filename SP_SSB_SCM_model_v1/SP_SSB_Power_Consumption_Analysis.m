@@ -310,8 +310,8 @@ end
 num_ADC = 1;
 
 
-ParamPCA.P_DAC = num_DAC*560e-3/60e9*ParamDAC.DAC_Rate/8*ParamDAC.qnbit_DAC ;
-ParamPCA.P_ADC = num_ADC*303e-3/60e9*ParamSig.Baud_Rate*ParamRxDSP.KKoverSamp/7*ParamADC.qnbit_ADC;
+ParamPCA.P_DAC = num_DAC*308e-3/92e9*ParamDAC.DAC_Rate/8*ParamDAC.qnbit_DAC ;
+ParamPCA.P_ADC = num_ADC*300e-3/92e9*ParamSig.Baud_Rate*ParamRxDSP.KKoverSamp/7*ParamADC.qnbit_ADC;
 
 if ParamOpt.BER_target == 3.8e-3
     ParamPCA.P_FEC = (0.42*0.05+0.42*0.95*(ParamSig.Info_Bit_Rate/400e9))/2;

@@ -29,6 +29,8 @@ function yn = QAMx_LMS_DD(xn, bn, SE, mu, Update_Tap_or_Not,Sps_in,LMS_Plot_Conv
                 break;
             end
             switch SE
+                case 6
+                    en = rx_64QAM_Decision(y) - y;
                 case 5
                     en = rx_32QAM_Decision(y) - y;
                 case 4

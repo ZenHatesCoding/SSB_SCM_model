@@ -4,9 +4,11 @@ clc;
 close all;
 
 %% Initialization
-SP_SSB_Simulator_Control_Param_Init;
+% 200G means 64 QAM 40 Gbaud
+% currently still at 30 Gbaud - under development
+SP200G_SSB_Simulator_Control_Param_Init;
 
-SP_SSB_Simulator_System_Param_Init;
+SP200G_SSB_Simulator_System_Param_Init;
 
 SP_SSB_PhysicalLayerSimulator;
 % while ParamPhysicalModel.BER_avg > 0.45 % let's try again

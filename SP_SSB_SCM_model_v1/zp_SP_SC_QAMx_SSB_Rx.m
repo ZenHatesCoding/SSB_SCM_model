@@ -556,6 +556,9 @@ function [BER_X,SNR_X] = zp_SP_SC_QAMx_SSB_Rx(ParamControl,ParamRxDSP,ParamSig,P
     Tx_Symbols_X = pwr_normalization(Tx_Symbols_X(ParamRxDSP.Head+1:end-ParamRxDSP.Head));  
     
     switch SE
+        case 6
+            Rx_Bits_X = rx_64QAM_Decode(Rx_Symbols_X);  
+            Tx_Bits_X = rx_64QAM_Decode(Tx_Symbols_X);
         case 5
             Rx_Bits_X = rx_32QAM_Decode(Rx_Symbols_X);  
             Tx_Bits_X = rx_32QAM_Decode(Tx_Symbols_X);

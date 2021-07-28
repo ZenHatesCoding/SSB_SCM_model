@@ -37,10 +37,12 @@ function [Tx_Time_Data_X,Tx_Sequence_X,ParamPS] = zp_SP_QAMx_Tx(ParamControl,Par
 
     
     %% Generate Sequence
-    M = 2^SE; % 16QAM
+    M = 2^SE; 
     
     Inf_Bits_X = randi([0,1],[1,Sequence_Length*log2(M)]);
     switch SE
+        case 6
+            Tx_Sequence_X = tx_64QAM_mod(Inf_Bits_X);
         case 5
             Tx_Sequence_X = tx_32QAM_mod(Inf_Bits_X);
         case 4

@@ -56,7 +56,7 @@ switch ParamControl.PAM_or_QAM
                     ParamSig.SC_Baud_Rate = 30e9;
                     ParamSig.roll_off = 0.05;
             end
-            ParamSig.SC = 4;
+            ParamSig.SC = 6;
             ParamSig.SC_power = 1;
 
         else
@@ -231,7 +231,7 @@ end
 ParamLas.slope = 0.137; %10^(1.6)/(300-15);
 ParamLas.current = 10^(ParamLas.laser_power_dBm/10)/ParamLas.slope+40;
 ParamLas.Voltage = 2.7;
-ParamLas.RIN = -145; % dB/Hz
+ParamLas.RIN = -155; % dB/Hz
 
 % RIN affects SNR at DAC Rate
 ParamLas.Laser_SNR = 1/(10^(0.1*(ParamLas.RIN))*ParamDAC.DAC_Rate);
@@ -247,7 +247,7 @@ ParamLas.omega0 = 2*pi*ParamGen.c0/ParamLas.Lambda0;
 ParamLas.omega_ref = 2*pi*ParamGen.c0/ParamLas.Lambda_ref;
 
 %% Fiber
-ParamFib.FiberLength = 40e3;
+ParamFib.FiberLength = 0e3;
 if ParamControl.Curve_Fitting_or_Not
     ParamFib.FiberLength = 80e3;
 end

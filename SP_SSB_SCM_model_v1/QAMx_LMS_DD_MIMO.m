@@ -40,6 +40,9 @@ function [yn1,yn2] = QAMx_LMS_DD_MIMO(xn1,xn2, bn11,bn12,bn21,bn22,...
         end
         if Update_Tap_or_Not
             switch SE
+                case 6
+                    en1 = rx_64QAM_Decision(y1) - y1;
+                    en2 = rx_64QAM_Decision(y2) - y2;
                 case 5
                     en1 = rx_32QAM_Decision(y1) - y1;
                     en2 = rx_32QAM_Decision(y2) - y2;

@@ -190,7 +190,6 @@ function Rx_Time_Data = rx_iter_KK_detection_VSB_LN_FFT(Rx_I,ParamRxDSP,...
             end
             
             bn = real(sqrt(Rx_I-(diff_im).^2));
-%             bn = real(sqrt(Rx_I-(imS1-imS2).^2));
 
             bn = [zeros(1,M),bn];
 
