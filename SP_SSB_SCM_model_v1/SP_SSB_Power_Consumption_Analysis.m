@@ -125,6 +125,13 @@ else
 end
 N_opG = (Nfft+2*(Nfft-ParamRxDSP.hilbert_tap))*ceil(log2(n_parallel));
 
+
+if ParamControl.KK_option == 2 || ParamControl.KK_option == 3
+    N_opM = N_opM*ParamRxDSP.numKKiter;
+    N_opA = N_opA*ParamRxDSP.numKKiter;
+    N_opR = N_opR*ParamRxDSP.numKKiter;
+    N_opG = N_opG*ParamRxDSP.numKKiter;
+end
 % up to now Hilbert transform considered
 
 if ParamControl.KK_option == 0       
@@ -138,19 +145,19 @@ elseif  ParamControl.KK_option == 1
     N_opRO = Nfft; % 1 LUT
 
 elseif  ParamControl.KK_option == 2 % share FFT
-    N_opM = N_opM + Nfft;
-    N_opA = N_opA + Nfft;
-    N_opRO = 2*Nfft; 
-    N_opR = N_opR + Nfft*2; % bit flipping
+    N_opM = N_opM + Nfft*ParamRxDSP.numKKiter;
+    N_opA = N_opA + Nfft*ParamRxDSP.numKKiter;
+    N_opRO = Nfft+Nfft*ParamRxDSP.numKKiter; 
+    N_opR = N_opR + Nfft*2*ParamRxDSP.numKKiter; % bit flipping
 elseif  ParamControl.KK_option == 3 % share FFT % don't use Hilbert transform
-    N_opM = N_opM + Nfft + 3*Nfft;
-    N_opA = N_opA + Nfft + 3*Nfft;
-    N_opRO = 2*Nfft; 
-    N_opR = N_opR + Nfft*2; % bit flipping
+    N_opM = N_opM + (Nfft + 3*Nfft)*ParamRxDSP.numKKiter;
+    N_opA = N_opA + (Nfft + 3*Nfft)*ParamRxDSP.numKKiter;
+    N_opRO = Nfft+Nfft*ParamRxDSP.numKKiter; 
+    N_opR = N_opR + Nfft*2*ParamRxDSP.numKKiter; % bit flipping
 end
 
-N_opM*n_samp/(Nfft-ParamRxDSP.hilbert_tap)
-N_opA*n_samp/(Nfft-ParamRxDSP.hilbert_tap)
+% N_opM*n_samp/(Nfft-ParamRxDSP.hilbert_tap)
+% N_opA*n_samp/(Nfft-ParamRxDSP.hilbert_tap)
 
 
 ParamECA_DSP.E_KK =  n_samp*(N_opM*ParamCMOS.E_opM+N_opA*ParamCMOS.E_opA+...
@@ -170,6 +177,18 @@ switch ParamRxDSP.KKoverSamp*ParamSig.Baud_Rate/1e9
         [N_opM1,N_opA1] = numOP_SplitRadix_FFT(Nfft1);
         N_opM = N_opM1/2;
         N_opA = N_opA1/2 + Nfft1*4/2;
+    case 68
+        Nfft1 = 17;
+        Nfft2 = 64;
+
+        N_opM1 = 70; 
+        N_opA1 = 314;
+        [N_opM2,N_opA2] = numOP_SplitRadix_FFT(Nfft2);
+        N_opM = Nfft2*N_opM1 + Nfft1*N_opM2;
+        N_opA = Nfft2*N_opA1 + Nfft1*N_opA2;
+
+        N_opM = N_opM/2;
+        N_opA = N_opA/2 + Nfft1*Nfft2*4/2;
     case 72
         Nfft1 = 9;
         Nfft2 = 128;
@@ -182,12 +201,36 @@ switch ParamRxDSP.KKoverSamp*ParamSig.Baud_Rate/1e9
 
         N_opM = N_opM/2;
         N_opA = N_opA/2 + Nfft1*Nfft2*4/2;
+    case 76
+        Nfft1 = 19;
+        Nfft2 = 64;
+
+        N_opM1 = 76; 
+        N_opA1 = 372;
+        [N_opM2,N_opA2] = numOP_SplitRadix_FFT(Nfft2);
+        N_opM = Nfft2*N_opM1 + Nfft1*N_opM2;
+        N_opA = Nfft2*N_opA1 + Nfft1*N_opA2;
+
+        N_opM = N_opM/2;
+        N_opA = N_opA/2 + Nfft1*Nfft2*4/2;
     case 80
         Nfft1 = 5;
-        Nfft2 = 256;
+        Nfft2 = 64;
 
         N_opM1 = 5*2; 
         N_opA1 = 17*2;
+        [N_opM2,N_opA2] = numOP_SplitRadix_FFT(Nfft2);
+        N_opM = Nfft2*N_opM1 + Nfft1*N_opM2;
+        N_opA = Nfft2*N_opA1 + Nfft1*N_opA2;
+
+        N_opM = N_opM/2;
+        N_opA = N_opA/2 + Nfft1*Nfft2*4/2;
+    case 84
+        Nfft1 = 21;
+        Nfft2 = 64;
+
+        N_opM1 = 4*7+16*3; 
+        N_opA1 = 12*7+72*3;
         [N_opM2,N_opA2] = numOP_SplitRadix_FFT(Nfft2);
         N_opM = Nfft2*N_opM1 + Nfft1*N_opM2;
         N_opA = Nfft2*N_opA1 + Nfft1*N_opA2;
@@ -267,9 +310,10 @@ ParamECA_DSP.E_Rx_resamp = n_samp*(N_opM*ParamCMOS.E_opM+N_opA*ParamCMOS.E_opA+n
 
 
 %% RxDSP - Time Recovery
+% gardner power
 n_samp = 2;
 B_TR = 256;
-N_opM = 7*B_TR+2;
+N_opM = (7-1+2.5)*B_TR+2;
 N_opA = 28*B_TR+1;
 N_opRO = 4.5*n_ADC*B_TR;
 N_opR = n_ADC*(16*B_TR+6);
@@ -310,15 +354,15 @@ end
 num_ADC = 1;
 
 
-ParamPCA.P_DAC = num_DAC*308e-3/92e9*ParamDAC.DAC_Rate/8*ParamDAC.qnbit_DAC ;
-ParamPCA.P_ADC = num_ADC*300e-3/92e9*ParamSig.Baud_Rate*ParamRxDSP.KKoverSamp/7*ParamADC.qnbit_ADC;
+ParamPCA.P_DAC = num_DAC*308e-3/92e9*ParamDAC.DAC_Rate* (2^ParamDAC.qnbit_DAC/2^8); 
+ParamPCA.P_ADC = num_ADC*300e-3/92e9*ParamSig.Baud_Rate*ParamRxDSP.KKoverSamp*(2^ParamADC.qnbit_ADC/2^8);
 
 if ParamOpt.BER_target == 3.8e-3
     ParamPCA.P_FEC = (0.42*0.05+0.42*0.95*(ParamSig.Info_Bit_Rate/400e9))/2;
 else
     ParamPCA.P_FEC = 0.42/4;
 end
-ParamPCA.P_PD = 0.169 ;
+ParamPCA.P_PD = 0.225 ;
 ...+ 10^(ParamPhysicalModel.Received_Pwr_dBm/10)/1e3*0.76*5;
 
 % ParamPhysicalModel.ModVpp = ParamSys.Vpi*ParamSys.Vpp_over_Vpi;

@@ -101,8 +101,8 @@ ParamDAC.clipping_Prob = 1e-3; % 1e-2
 
 switch ParamControl.DAC_LPF_option
     case 1
-        ParamDAC.DAC_LPF_BW = 12e9;
-        ParamDAC.DAC_LPF_order = 0.6;
+        ParamDAC.DAC_LPF_BW = 38e9;
+        ParamDAC.DAC_LPF_order = 3;
         ParamDAC.DAC_LPF_type = 'gaussian';
     case 2
         load('equalizer_D0IN_SHF39358_totkuVcable_DCA_electrical_head_88GSps_v2.mat')
@@ -130,7 +130,7 @@ switch ParamControl.DAC_LPF_option
         
 end
 
-ParamDAC.DAC_SNR= 32; % DAC noise ENOB*6.02+1.76
+ParamDAC.DAC_SNR= 32.76; % DAC noise ENOB*6.02+1.76
 ParamDAC.DAC_SNR = ParamDAC.DAC_SNR + ...
                    10*log10(2*ParamSig.Baud_Rate/ParamDAC.DAC_Rate);
 % **************
@@ -140,7 +140,7 @@ ParamDAC.DAC_SNR = ParamDAC.DAC_SNR + ...
                                       
 
 %% modulator
-ParamMod.Modulator_Loss_dB = 7.5; % single modulator
+ParamMod.Modulator_Loss_dB = 6; % single modulator
 ParamMod.Y_branch_Loss_dB = 0.5;
 ParamMod.MMI_Loss_dB = 1;
 ParamMod.Modulator_LPF_BW = 44e9;
@@ -166,9 +166,9 @@ switch ParamControl.CSPR_tuning_case
             end
         else
             if ParamControl.VSB_or_Not
-                ParamSys.Carrier_path_pwr_ratio = 0.22;
+                ParamSys.Carrier_path_pwr_ratio = 0.28; % fa 0.3
             else
-                ParamSys.Carrier_path_pwr_ratio = 0.15;
+                ParamSys.Carrier_path_pwr_ratio = 0.16;
             end
         end
               
@@ -210,12 +210,12 @@ switch ParamControl.Laser_case
                     ParamLas.laser_power_dBm = 17.5;
                     ParamLas.Laser_Linewidth = 1e6;
                 else
-                    ParamLas.laser_power_dBm = 14.5;
+                    ParamLas.laser_power_dBm = 14.4;
                     ParamLas.Laser_Linewidth = 1e6;
                 end
             case 2
                 if ParamControl.VSB_or_Not
-                    ParamLas.laser_power_dBm = 16;
+                    ParamLas.laser_power_dBm = 16.2;
                     ParamLas.Laser_Linewidth = 1e6;
                 else
                     ParamLas.laser_power_dBm = 16;
@@ -231,7 +231,7 @@ end
 ParamLas.slope = 0.137; %10^(1.6)/(300-15);
 ParamLas.current = 10^(ParamLas.laser_power_dBm/10)/ParamLas.slope+40;
 ParamLas.Voltage = 2.7;
-ParamLas.RIN = -145; % dB/Hz
+ParamLas.RIN = -140; % dB/Hz
 
 % RIN affects SNR at DAC Rate
 ParamLas.Laser_SNR = 1/(10^(0.1*(ParamLas.RIN))*ParamDAC.DAC_Rate);
@@ -280,7 +280,7 @@ if ParamControl.VSB_or_Not
         case 5
             ParamVSB.Opt_Flt_offset = 3e9; 
             % ParamVSB.Opt_Flt_offset =ParamSig.GuardBand;
-            ParamVSB.Opt_Flt_drift = 0e9; 
+            ParamVSB.Opt_Flt_drift = -2.5e9; 
             ParamVSB.Opt_Flt_ILoss_dB = 0.9 + ParamChan.coupler_loss_dB*2;
     end
 else
@@ -365,7 +365,7 @@ if ParamControl.Digital_Resample_Before_KK_or_Not
             end
         case 2
             if ParamControl.VSB_or_Not
-                ParamRxDSP.KKoverSamp = 64/30;
+                ParamRxDSP.KKoverSamp = 68/30;
             else
                 ParamRxDSP.KKoverSamp = 64/30;
             end
@@ -375,7 +375,7 @@ else
 end
 ParamRxDSP.nb = 8;
 ParamRxDSP.f_clk = 500e6; % 500 MHz
-ParamRxDSP.hilbert_tap = 32; % =0 no overlap at all
+ParamRxDSP.hilbert_tap = 0; % =0 no overlap at all
 ParamRxDSP.numKKiter = 1; % for KK option 2,3 and 4 
 ParamRxDSP.FAiterKK_tap = 0;
 if ParamControl.FEC_option == 1
@@ -386,9 +386,9 @@ if ParamControl.FEC_option == 1
     end
 elseif ParamControl.FEC_option == 2
     if ParamControl.VSB_or_Not
-        ParamRxDSP.CD_tap = 30; 
+        ParamRxDSP.CD_tap = 45; 
     else
-        ParamRxDSP.CD_tap = 60; 
+        ParamRxDSP.CD_tap = 45; 
     end
 end
 ParamRxDSP.Nfft = 1024;

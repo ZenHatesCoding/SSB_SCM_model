@@ -1,12 +1,12 @@
 %% Block Control
-ParamControl.PCA_Enable_or_Not = 0;
+ParamControl.PCA_Enable_or_Not = 1;
 
 %% Plot
 ParamControl.Plot_VSB_filter_or_Not = 0;
-ParamControl.Plot_Spectrum_or_Not = 0;
+ParamControl.Plot_Spectrum_or_Not = 1;
 ParamControl.Plot_CrossCorr_or_Not = 0;
 ParamControl.Equalization_Plot_Conv_or_Not = 0;
-ParamControl.Plot_Constellation_or_Not = 1;
+ParamControl.Plot_Constellation_or_Not = 0;
 ParamControl.Plot_Noise_or_Not = 0;
 ParamControl.Plot_Error_or_Not = 0;
 ParamControl.Plot_Power_Pie_or_Not = 0;

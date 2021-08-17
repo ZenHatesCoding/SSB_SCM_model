@@ -1,6 +1,6 @@
 
 clc; 
-% clear;
+clear;
 close all;
 
 %% Initialization
@@ -50,9 +50,9 @@ if ParamControl.PCA_Enable_or_Not
 %         Psum_Vpi_list.'
 
         ParamPCA
-        a = ParamPCA.P_KK+ParamPCA.P_Rx_resamp+ParamPCA.P_ADC
-        b = ParamPCA.P_driver+ParamPCA.P_Tx_resamp+ParamPCA.P_DAC+ParamPCA.P_laser
-        c = a+b
+%         a = ParamPCA.P_KK+ParamPCA.P_Rx_resamp+ParamPCA.P_ADC
+%         b = ParamPCA.P_driver+ParamPCA.P_Tx_resamp+ParamPCA.P_DAC+ParamPCA.P_laser
+%         c = a+b
     else
         disp(['cannot achieve below threshold transmission with ',num2str(ParamRxDSP.LMS_linear_tap),' taps.']);
     end

@@ -85,9 +85,15 @@ function [BER_X,SNR_X] = zp_SP_SC_QAMx_SSB_Rx(ParamControl,ParamRxDSP,ParamSig,P
                     end
                 else
                     % from R_ADC -> Baud*KKoverSamp
-                    if ParamRxDSP.KKoverSamp == 72/30
+                    if ParamRxDSP.KKoverSamp == 68/30
                         Nfft = 1024*alpha;
-                        num_zero_insertion = 128*alpha;  
+                        num_zero_insertion = 64*alpha; 
+                    elseif ParamRxDSP.KKoverSamp == 72/30
+                        Nfft = 1024*alpha;
+                        num_zero_insertion = 128*alpha;
+                    elseif ParamRxDSP.KKoverSamp == 76/30
+                        Nfft = 1024*alpha;
+                        num_zero_insertion = 192*alpha; 
                     elseif ParamRxDSP.KKoverSamp == 80/30
                         Nfft = 1024*alpha;
                         num_zero_insertion = 256*alpha;
@@ -254,11 +260,12 @@ function [BER_X,SNR_X] = zp_SP_SC_QAMx_SSB_Rx(ParamControl,ParamRxDSP,ParamSig,P
                         Nfft = 1152*alpha;
 
                         num_zero_discard = 256*alpha; 
-
+                    
                     elseif ParamRxDSP.KKoverSamp == 80/28
                         Nfft = 1280*alpha;
 
                         num_zero_discard = 384*alpha;
+
                     elseif ParamRxDSP.KKoverSamp == 88/28
                         Nfft = 1408*alpha;
 
@@ -286,17 +293,28 @@ function [BER_X,SNR_X] = zp_SP_SC_QAMx_SSB_Rx(ParamControl,ParamRxDSP,ParamSig,P
                     if ParamRxDSP.KKoverSamp == 64/30
                         Nfft = 1024*alpha;
 
-                        num_zero_discard = 64*alpha; 
+                        num_zero_discard = 64*alpha;
+                    elseif ParamRxDSP.KKoverSamp == 68/30
+                        Nfft = 1088*alpha;
+
+                        num_zero_discard = 128*alpha;
 
                     elseif ParamRxDSP.KKoverSamp == 72/30
                         Nfft = 1152*alpha;
 
                         num_zero_discard = 192*alpha; 
+                    elseif ParamRxDSP.KKoverSamp == 76/30
+                        Nfft = 1216*alpha;
 
+                        num_zero_discard = 256*alpha;
                     elseif ParamRxDSP.KKoverSamp == 80/30
                         Nfft = 1280*alpha;
 
                         num_zero_discard = 320*alpha;
+                    elseif ParamRxDSP.KKoverSamp == 84/30
+                        Nfft = 1344*alpha;
+
+                        num_zero_discard = 384*alpha;
                     elseif ParamRxDSP.KKoverSamp == 88/30
                         Nfft = 1408*alpha;
 

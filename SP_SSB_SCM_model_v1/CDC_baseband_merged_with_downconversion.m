@@ -23,20 +23,38 @@ function Output_Samples = CDC_baseband_merged_with_downconversion(Input_Samples,
     else
         if ParamRxDSP.KKoverSamp == 64/30
             Nfft = 1024*alpha;
-            num_zero_discard = 64*alpha; 
+
+            num_zero_discard = 64*alpha;
+        elseif ParamRxDSP.KKoverSamp == 68/30
+            Nfft = 1088*alpha;
+
+            num_zero_discard = 128*alpha;
+
         elseif ParamRxDSP.KKoverSamp == 72/30
             Nfft = 1152*alpha;
+
             num_zero_discard = 192*alpha; 
+        elseif ParamRxDSP.KKoverSamp == 76/30
+            Nfft = 1216*alpha;
+
+            num_zero_discard = 256*alpha;
         elseif ParamRxDSP.KKoverSamp == 80/30
             Nfft = 1280*alpha;
+
             num_zero_discard = 320*alpha;
+        elseif ParamRxDSP.KKoverSamp == 84/30
+            Nfft = 1344*alpha;
+
+            num_zero_discard = 384*alpha;
         elseif ParamRxDSP.KKoverSamp == 88/30
             Nfft = 1408*alpha;
+
             num_zero_discard = 448*alpha;
         elseif ParamRxDSP.KKoverSamp == 96/30
             Nfft = 1536*alpha;
-            num_zero_discard = 576*alpha;  
-        end      
+
+            num_zero_discard = 576*alpha;    
+        end       
     end
 
     roll_off = ParamSig.roll_off;
